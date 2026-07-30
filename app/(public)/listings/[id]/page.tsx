@@ -1,9 +1,10 @@
 import { notFound } from "next/navigation"
-import { Bath, Bed, DoorOpen, Mail, MapPin, Phone } from "lucide-react"
+import { Bath, Bed, Check, DoorOpen, Mail, MapPin, Phone } from "lucide-react"
 
 import { createClient } from "@/lib/supabase/server"
 import { listingImageUrl } from "@/lib/listings/image-url"
 import { formatPrice } from "@/lib/utils/format"
+import { AMENITY_LABELS, type Amenity } from "@/lib/listings/amenities"
 import { Badge } from "@/components/ui/badge"
 
 function whatsappHref(value: string) {
@@ -115,6 +116,23 @@ export default async function ListingDetailPage({
               <p className="mt-2 leading-relaxed whitespace-pre-line text-muted-foreground">
                 {listing.description}
               </p>
+            </div>
+          )}
+
+          {listing.amenities && listing.amenities.length > 0 && (
+            <div className="mt-8">
+              <h2 className="text-lg font-extrabold">Features &amp; amenities</h2>
+              <div className="mt-3 grid grid-cols-2 gap-x-4 gap-y-2 sm:grid-cols-3">
+                {listing.amenities.map((amenity) => (
+                  <span
+                    key={amenity}
+                    className="flex items-center gap-2 text-sm font-medium"
+                  >
+                    <Check className="size-4 shrink-0 text-primary" />
+                    {AMENITY_LABELS[amenity as Amenity] ?? amenity}
+                  </span>
+                ))}
+              </div>
             </div>
           )}
 

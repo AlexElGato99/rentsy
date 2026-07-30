@@ -54,7 +54,7 @@ export async function signup(input: SignupInput) {
     }
   }
 
-  redirect("/")
+  redirect(role === "seller" ? "/seller/listings/new" : "/")
 }
 
 export async function login(input: LoginInput) {

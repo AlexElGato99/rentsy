@@ -64,11 +64,10 @@ export default function Home() {
           </div>
 
           <div className="mt-6">
-            <Link
-              href="/signup"
-              className="text-sm font-bold underline-offset-4 hover:underline"
-            >
-              Own a property? List it for free &rarr;
+            <Link href="/signup">
+              <Button variant="outline" size="sm">
+                Own a property? List it for free &rarr;
+              </Button>
             </Link>
           </div>
         </div>
@@ -98,9 +97,12 @@ export default function Home() {
           <h2 className="text-3xl font-extrabold tracking-tight">
             How it works
           </h2>
-          <div className="mt-8 grid gap-8 sm:grid-cols-3">
+          <div className="mt-8 grid gap-6 sm:grid-cols-3">
             {STEPS.map(({ step, title, description }) => (
-              <div key={step}>
+              <div
+                key={step}
+                className="rounded-2xl border-2 border-foreground bg-card p-6 shadow-brutal-sm"
+              >
                 <span className="flex size-10 items-center justify-center rounded-full border-2 border-foreground bg-accent text-lg font-extrabold shadow-brutal-sm">
                   {step}
                 </span>

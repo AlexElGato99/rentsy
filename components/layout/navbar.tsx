@@ -27,6 +27,12 @@ export async function Navbar() {
           >
             Browse rentals
           </Link>
+          <Link
+            href="/about"
+            className="hidden rounded-xl px-3 py-2 text-sm font-bold text-foreground transition-colors hover:bg-muted sm:inline-block"
+          >
+            About
+          </Link>
 
           {profile ? (
             <>

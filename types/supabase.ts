@@ -60,6 +60,7 @@ export type Database = {
           bedrooms: number | null
           bathrooms: number | null
           rooms: number | null
+          amenities: string[]
           city: string
           neighborhood: string | null
           address: string | null
@@ -82,6 +83,7 @@ export type Database = {
           bedrooms?: number | null
           bathrooms?: number | null
           rooms?: number | null
+          amenities?: string[]
           city: string
           neighborhood?: string | null
           address?: string | null
@@ -104,6 +106,7 @@ export type Database = {
           bedrooms?: number | null
           bathrooms?: number | null
           rooms?: number | null
+          amenities?: string[]
           city?: string
           neighborhood?: string | null
           address?: string | null

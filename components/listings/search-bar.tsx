@@ -22,7 +22,7 @@ export function SearchBar() {
   return (
     <form
       action="/listings"
-      className="flex w-full max-w-2xl flex-col gap-3 rounded-3xl border-2 border-foreground bg-card p-3 shadow-brutal sm:flex-row sm:items-center sm:gap-2"
+      className="mx-auto flex w-full max-w-2xl flex-col gap-3 rounded-3xl border-2 border-foreground bg-card p-3 shadow-brutal sm:flex-row sm:items-center sm:gap-2"
     >
       <div className="flex flex-1 items-center gap-2 rounded-xl border-2 border-foreground bg-background px-3 py-2.5 sm:border-0 sm:bg-transparent sm:py-1">
         <Search className="size-4 shrink-0 text-muted-foreground" />

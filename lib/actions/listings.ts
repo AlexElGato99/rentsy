@@ -31,29 +31,30 @@ function toRow(input: ListingInput) {
   }
 }
 
-export async function createListing(input: ListingInput) {
+export async function createDraftListing() {
   const profile = await getCurrentProfile()
   if (!profile || (profile.role !== "seller" && profile.role !== "admin")) {
-    return { error: "Only sellers can create listings." }
-  }
-
-  const validated = listingSchema.safeParse(input)
-  if (!validated.success) {
-    return { error: validated.error.issues[0]?.message ?? "Invalid input." }
+    redirect("/seller/dashboard")
   }
 
   const supabase = await createClient()
   const { data, error } = await supabase
     .from("listings")
-    .insert({ owner_id: profile.id, ...toRow(validated.data) })
+    .insert({
+      owner_id: profile.id,
+      title: "Untitled listing",
+      property_type: "apartment",
+      price: 0,
+      city: "",
+      status: "unpublished",
+    })
     .select("id")
     .single()
 
   if (error || !data) {
-    return { error: error?.message ?? "Could not create listing." }
+    redirect("/seller/dashboard")
   }
 
-  revalidatePath("/seller/dashboard")
   redirect(`/seller/listings/${data.id}/edit?created=1`)
 }
 
