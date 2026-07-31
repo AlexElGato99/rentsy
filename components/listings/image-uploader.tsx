@@ -124,9 +124,17 @@ export function ImageUploader({
           />
         </label>
       </div>
-      <p className="text-xs font-medium text-muted-foreground">
-        JPEG, PNG, or WEBP. Up to {MAX_IMAGES} photos, {MAX_SIZE_MB}MB each.
-      </p>
+      <div className="rounded-xl border-2 border-dashed border-foreground/40 bg-muted/40 p-3">
+        <p className="text-xs font-bold">
+          Tip: for the best look, upload landscape photos (4:3 or 16:9 ratio,
+          at least 1200&times;900px).
+        </p>
+        <p className="mt-1 text-xs font-medium text-muted-foreground">
+          Photos are cropped to fill their frame, so portrait or square shots
+          may lose their edges. JPEG, PNG, or WEBP, up to {MAX_IMAGES}{" "}
+          photos, {MAX_SIZE_MB}MB each.
+        </p>
+      </div>
     </div>
   )
 }

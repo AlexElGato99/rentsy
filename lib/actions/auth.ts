@@ -1,6 +1,7 @@
 "use server"
 
 import { redirect } from "next/navigation"
+import { headers } from "next/headers"
 import type { AuthError } from "@supabase/supabase-js"
 
 import { createClient } from "@/lib/supabase/server"
@@ -22,11 +23,21 @@ const FRIENDLY_AUTH_ERRORS: Record<string, string> = {
     "An account with this email already exists. Try logging in instead.",
   email_address_invalid: "Enter a valid email address.",
   weak_password: "Choose a stronger password.",
-  invalid_credentials: "Invalid email or password.",
+  email_not_confirmed:
+    "Please confirm your email before logging in — check your inbox (and spam folder) for the confirmation link.",
 }
 
 function friendlyAuthError(error: AuthError): string {
   return (error.code && FRIENDLY_AUTH_ERRORS[error.code]) ?? error.message
+}
+
+async function getOrigin() {
+  const headersList = await headers()
+  const host = headersList.get("host")
+  const protocol =
+    headersList.get("x-forwarded-proto") ??
+    (host?.startsWith("localhost") ? "http" : "https")
+  return `${protocol}://${host}`
 }
 
 export async function signup(input: SignupInput) {
@@ -37,10 +48,14 @@ export async function signup(input: SignupInput) {
 
   const { role, fullName, email, password } = validated.data
   const supabase = await createClient()
+  const origin = await getOrigin()
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
-    options: { data: { role, full_name: fullName } },
+    options: {
+      data: { role, full_name: fullName },
+      emailRedirectTo: `${origin}/auth/callback`,
+    },
   })
 
   if (error) {
@@ -70,7 +85,7 @@ export async function login(input: LoginInput) {
     return {
       error:
         error.code === "invalid_credentials"
-          ? "Invalid email or password."
+          ? "Invalid email or password. If you just signed up, check your inbox to confirm your email first."
           : friendlyAuthError(error),
     }
   }

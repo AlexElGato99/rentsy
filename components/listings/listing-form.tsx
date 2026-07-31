@@ -27,7 +27,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Checkbox } from "@/components/ui/checkbox"
-import { RadioPills } from "@/components/listings/radio-pills"
+import { RadioPills } from "@/components/ui/radio-pills"
 
 const PROPERTY_TYPE_LABELS: Record<(typeof PROPERTY_TYPES)[number], string> = {
   apartment: "Apartment",

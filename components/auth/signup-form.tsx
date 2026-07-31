@@ -16,8 +16,13 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { RadioPills } from "@/components/ui/radio-pills"
 import { Alert, AlertDescription } from "@/components/ui/alert"
+
+const ROLE_OPTIONS = [
+  { value: "customer", label: "Rent a place" },
+  { value: "seller", label: "List my property" },
+] as const
 
 export function SignupForm() {
   const [isPending, startTransition] = useTransition()
@@ -56,12 +61,12 @@ export function SignupForm() {
           render={({ field }) => (
             <FormItem>
               <FormLabel>I want to&hellip;</FormLabel>
-              <Tabs value={field.value} onValueChange={field.onChange}>
-                <TabsList className="grid w-full grid-cols-2">
-                  <TabsTrigger value="customer">Rent a place</TabsTrigger>
-                  <TabsTrigger value="seller">List my property</TabsTrigger>
-                </TabsList>
-              </Tabs>
+              <RadioPills
+                name="role"
+                value={field.value}
+                onChange={field.onChange}
+                options={ROLE_OPTIONS}
+              />
             </FormItem>
           )}
         />
@@ -120,7 +125,7 @@ export function SignupForm() {
           </Alert>
         )}
 
-        <Button type="submit" className="w-full" disabled={isPending}>
+        <Button type="submit" size="lg" className="w-full" disabled={isPending}>
           {isPending ? "Creating account..." : "Create account"}
         </Button>
       </form>
