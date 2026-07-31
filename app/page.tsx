@@ -1,8 +1,10 @@
 import Link from "next/link"
-import { MessageCircle, ShieldCheck, Wallet } from "lucide-react"
+import { ArrowRight, MessageCircle, ShieldCheck, Wallet } from "lucide-react"
 
+import { createClient } from "@/lib/supabase/server"
 import { Button } from "@/components/ui/button"
 import { SearchBar } from "@/components/listings/search-bar"
+import { ListingCard } from "@/components/listings/listing-card"
 
 const FEATURES = [
   {
@@ -43,7 +45,17 @@ const STEPS = [
   },
 ]
 
-export default function Home() {
+export default async function Home() {
+  const supabase = await createClient()
+  const { data: latestListings } = await supabase
+    .from("listings")
+    .select(
+      "id, title, price, city, neighborhood, bedrooms, bathrooms, listing_images(storage_path, position)"
+    )
+    .eq("status", "published")
+    .order("created_at", { ascending: false })
+    .limit(3)
+
   return (
     <main className="flex-1">
       <section className="relative overflow-hidden border-b-2 border-foreground bg-accent/30">
@@ -72,6 +84,57 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {latestListings && latestListings.length > 0 && (
+        <section className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6">
+          <div className="flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <h2 className="text-3xl font-extrabold tracking-tight">
+                Latest listings
+              </h2>
+              <p className="mt-2 font-medium text-muted-foreground">
+                Fresh off the market &mdash; published directly by owners.
+              </p>
+            </div>
+            <Link href="/listings" className="hidden sm:block">
+              <Button variant="outline">
+                Explore more
+                <ArrowRight className="size-4" />
+              </Button>
+            </Link>
+          </div>
+
+          <div className="mt-8 grid gap-6 sm:grid-cols-3">
+            {latestListings.map((listing) => {
+              const cover = [...listing.listing_images].sort(
+                (a, b) => a.position - b.position
+              )[0]
+              return (
+                <ListingCard
+                  key={listing.id}
+                  id={listing.id}
+                  title={listing.title}
+                  price={listing.price}
+                  city={listing.city}
+                  neighborhood={listing.neighborhood}
+                  bedrooms={listing.bedrooms}
+                  bathrooms={listing.bathrooms}
+                  coverImagePath={cover?.storage_path}
+                />
+              )
+            })}
+          </div>
+
+          <div className="mt-8 flex justify-center sm:hidden">
+            <Link href="/listings">
+              <Button variant="outline">
+                Explore more
+                <ArrowRight className="size-4" />
+              </Button>
+            </Link>
+          </div>
+        </section>
+      )}
 
       <section className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6">
         <div className="grid gap-6 sm:grid-cols-3">

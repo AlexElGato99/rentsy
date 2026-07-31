@@ -5,6 +5,7 @@ import type { ListingStatus } from "@/types/supabase"
 import { listingImageUrl } from "@/lib/listings/image-url"
 import { formatPrice } from "@/lib/utils/format"
 import { Badge } from "@/components/ui/badge"
+import { CoverImage } from "@/components/listings/cover-image"
 
 export type ListingCardData = {
   id: string
@@ -36,11 +37,10 @@ export function ListingCard({
     >
       <div className="relative aspect-4/3 overflow-hidden border-b-2 border-foreground bg-muted">
         {coverImagePath ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
+          <CoverImage
             src={listingImageUrl(coverImagePath)}
             alt={title}
-            className="size-full object-cover transition-transform duration-300 group-hover:scale-105"
+            className="size-full transition-transform duration-300 group-hover:scale-105"
           />
         ) : (
           <div className="flex size-full items-center justify-center text-sm font-bold text-muted-foreground">

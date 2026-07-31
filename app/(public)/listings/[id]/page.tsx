@@ -6,6 +6,7 @@ import { listingImageUrl } from "@/lib/listings/image-url"
 import { formatPrice } from "@/lib/utils/format"
 import { AMENITY_LABELS, type Amenity } from "@/lib/listings/amenities"
 import { Badge } from "@/components/ui/badge"
+import { CoverImage } from "@/components/listings/cover-image"
 
 function whatsappHref(value: string) {
   const digits = value.replace(/[^0-9]/g, "")
@@ -48,11 +49,10 @@ export default async function ListingDetailPage({
       <div className="grid gap-3 sm:aspect-[16/7] sm:grid-cols-4">
         <div className="relative aspect-[4/3] min-h-0 overflow-hidden rounded-2xl border-2 border-foreground bg-muted sm:aspect-auto sm:col-span-3">
           {gallery[0] ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
+            <CoverImage
               src={listingImageUrl(gallery[0].storage_path)}
               alt={listing.title}
-              className="size-full object-cover"
+              className="size-full"
             />
           ) : (
             <div className="flex size-full items-center justify-center font-bold text-muted-foreground">
@@ -66,11 +66,10 @@ export default async function ListingDetailPage({
               key={image.id}
               className="min-h-0 overflow-hidden rounded-2xl border-2 border-foreground bg-muted"
             >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
+              <CoverImage
                 src={listingImageUrl(image.storage_path)}
                 alt=""
-                className="size-full object-cover"
+                className="size-full"
               />
             </div>
           ))}
