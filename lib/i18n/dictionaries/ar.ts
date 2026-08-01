@@ -46,6 +46,9 @@ const ar: Dictionary = {
       about: "من نحن",
       faq: "الأسئلة الشائعة",
       contact: "تواصل معنا",
+    },
+    legal: {
+      title: "قانوني",
       terms: "شروط الخدمة",
       privacy: "سياسة الخصوصية",
     },

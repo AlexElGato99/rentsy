@@ -29,8 +29,13 @@ export async function Footer() {
         { label: dict.footer.company.about, href: "/about" },
         { label: dict.footer.company.faq, href: "/faq" },
         { label: dict.footer.company.contact, href: "/contact" },
-        { label: dict.footer.company.terms, href: "/terms" },
-        { label: dict.footer.company.privacy, href: "/privacy" },
+      ],
+    },
+    {
+      title: dict.footer.legal.title,
+      links: [
+        { label: dict.footer.legal.terms, href: "/terms" },
+        { label: dict.footer.legal.privacy, href: "/privacy" },
       ],
     },
   ]
@@ -38,7 +43,7 @@ export async function Footer() {
   return (
     <footer className="border-t-2 border-foreground bg-secondary/40">
       <div className="mx-auto w-full max-w-6xl px-4 py-12 sm:px-6">
-        <div className="grid gap-10 sm:grid-cols-[1.5fr_1fr_1fr_1fr]">
+        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-[1.5fr_1fr_1fr_1fr_1fr]">
           <div>
             <Logo />
             <p className="mt-3 max-w-xs text-sm font-medium text-muted-foreground">

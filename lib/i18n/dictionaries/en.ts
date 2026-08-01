@@ -44,6 +44,9 @@ const en = {
       about: "About us",
       faq: "FAQs",
       contact: "Contact us",
+    },
+    legal: {
+      title: "Legal",
       terms: "Terms of Service",
       privacy: "Privacy Policy",
     },
