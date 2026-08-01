@@ -1,5 +1,6 @@
 import { Search } from "lucide-react"
 
+import type { Dictionary } from "@/lib/i18n/dictionaries/en"
 import { Button } from "@/components/ui/button"
 import {
   Select,
@@ -9,16 +10,16 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 
-const PROPERTY_TYPES = [
-  { value: "any", label: "Any type" },
-  { value: "apartment", label: "Apartment" },
-  { value: "house", label: "House" },
-  { value: "studio", label: "Studio" },
-  { value: "villa", label: "Villa" },
-  { value: "room", label: "Room" },
-] as const
+export function SearchBar({ dict }: { dict: Dictionary["searchBar"] }) {
+  const propertyTypes = [
+    { value: "any", label: dict.anyType },
+    { value: "apartment", label: dict.propertyTypes.apartment },
+    { value: "house", label: dict.propertyTypes.house },
+    { value: "studio", label: dict.propertyTypes.studio },
+    { value: "villa", label: dict.propertyTypes.villa },
+    { value: "room", label: dict.propertyTypes.room },
+  ] as const
 
-export function SearchBar() {
   return (
     <form
       action="/listings"
@@ -29,7 +30,7 @@ export function SearchBar() {
         <input
           type="text"
           name="city"
-          placeholder="City or neighborhood"
+          placeholder={dict.placeholder}
           className="w-full bg-transparent text-sm font-medium outline-none placeholder:font-normal placeholder:text-muted-foreground"
         />
       </div>
@@ -39,10 +40,10 @@ export function SearchBar() {
       <div className="sm:w-40">
         <Select name="type" defaultValue="any">
           <SelectTrigger className="w-full rounded-xl border-2 border-foreground bg-background font-bold shadow-none sm:border-0 sm:bg-transparent">
-            <SelectValue placeholder="Any type" />
+            <SelectValue placeholder={dict.anyType} />
           </SelectTrigger>
           <SelectContent>
-            {PROPERTY_TYPES.map((type) => (
+            {propertyTypes.map((type) => (
               <SelectItem key={type.value} value={type.value}>
                 {type.label}
               </SelectItem>
@@ -53,7 +54,7 @@ export function SearchBar() {
 
       <Button type="submit" size="lg" className="w-full sm:w-auto">
         <Search className="size-4.5" />
-        Search
+        {dict.search}
       </Button>
     </form>
   )

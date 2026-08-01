@@ -3,6 +3,8 @@ import Link from "next/link"
 import { LoginForm } from "@/components/auth/login-form"
 import { AuthShell } from "@/components/auth/auth-shell"
 import { Alert, AlertDescription } from "@/components/ui/alert"
+import { getLocale } from "@/lib/i18n/get-locale"
+import { getDictionary } from "@/lib/i18n/get-dictionary"
 
 export default async function LoginPage({
   searchParams,
@@ -10,32 +12,33 @@ export default async function LoginPage({
   searchParams: Promise<{ error?: string }>
 }) {
   const { error } = await searchParams
+  const locale = await getLocale()
+  const dict = getDictionary(locale)
+  const t = dict.auth.login
 
   return (
     <AuthShell
-      title="Log in"
-      subtitle="Welcome back to Rentsy."
+      title={t.title}
+      subtitle={t.subtitle}
+      dict={dict}
       footer={
         <>
-          Don&apos;t have an account?{" "}
+          {t.noAccount}{" "}
           <Link
             href="/signup"
             className="text-primary underline-offset-4 hover:underline"
           >
-            Sign up
+            {t.signUp}
           </Link>
         </>
       }
     >
       {error === "auth-callback-failed" && (
         <Alert variant="destructive" className="mb-5">
-          <AlertDescription>
-            That confirmation link is invalid or has expired. Log in below,
-            or sign up again if you still need to confirm your email.
-          </AlertDescription>
+          <AlertDescription>{t.callbackError}</AlertDescription>
         </Alert>
       )}
-      <LoginForm />
+      <LoginForm dict={t} />
     </AuthShell>
   )
 }

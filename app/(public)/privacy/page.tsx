@@ -1,8 +1,15 @@
 import { LegalPage } from "@/components/layout/legal-page"
+import { getLocale } from "@/lib/i18n/get-locale"
+import { getDictionary } from "@/lib/i18n/get-dictionary"
 
-export default function PrivacyPage() {
+export default async function PrivacyPage() {
+  const dict = getDictionary(await getLocale())
   return (
-    <LegalPage title="Privacy Policy" updated="July 30, 2026">
+    <LegalPage
+      title={dict.legal.privacy.title}
+      updated="July 30, 2026"
+      lastUpdatedLabel={dict.legal.lastUpdated}
+    >
       <p>
         This Privacy Policy explains what information Rentsy collects, how we
         use it, and the choices you have.

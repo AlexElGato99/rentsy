@@ -12,6 +12,7 @@ export type PropertyType =
   | "land"
   | "other"
 export type ListingStatus = "published" | "unpublished" | "archived"
+export type ListingType = "rent" | "sale"
 
 export type Database = {
   public: {
@@ -56,11 +57,14 @@ export type Database = {
           title: string
           description: string | null
           property_type: PropertyType
+          listing_type: ListingType
           price: number
+          currency: string
           bedrooms: number | null
           bathrooms: number | null
           rooms: number | null
           amenities: string[]
+          country: string | null
           city: string
           neighborhood: string | null
           address: string | null
@@ -79,11 +83,14 @@ export type Database = {
           title: string
           description?: string | null
           property_type: PropertyType
+          listing_type?: ListingType
           price: number
+          currency?: string
           bedrooms?: number | null
           bathrooms?: number | null
           rooms?: number | null
           amenities?: string[]
+          country?: string | null
           city: string
           neighborhood?: string | null
           address?: string | null
@@ -102,11 +109,14 @@ export type Database = {
           title?: string
           description?: string | null
           property_type?: PropertyType
+          listing_type?: ListingType
           price?: number
+          currency?: string
           bedrooms?: number | null
           bathrooms?: number | null
           rooms?: number | null
           amenities?: string[]
+          country?: string | null
           city?: string
           neighborhood?: string | null
           address?: string | null

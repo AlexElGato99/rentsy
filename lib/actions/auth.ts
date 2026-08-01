@@ -5,6 +5,8 @@ import { headers } from "next/headers"
 import type { AuthError } from "@supabase/supabase-js"
 
 import { createClient } from "@/lib/supabase/server"
+import { getLocale } from "@/lib/i18n/get-locale"
+import { getDictionary } from "@/lib/i18n/get-dictionary"
 import {
   loginSchema,
   signupSchema,
@@ -12,23 +14,10 @@ import {
   type SignupInput,
 } from "@/lib/validators/auth.schema"
 
-const FRIENDLY_AUTH_ERRORS: Record<string, string> = {
-  over_email_send_rate_limit:
-    "We've sent too many emails in a short time. Please wait a few minutes and try again.",
-  over_request_rate_limit:
-    "Too many attempts. Please wait a moment and try again.",
-  email_exists:
-    "An account with this email already exists. Try logging in instead.",
-  user_already_exists:
-    "An account with this email already exists. Try logging in instead.",
-  email_address_invalid: "Enter a valid email address.",
-  weak_password: "Choose a stronger password.",
-  email_not_confirmed:
-    "Please confirm your email before logging in — check your inbox (and spam folder) for the confirmation link.",
-}
-
-function friendlyAuthError(error: AuthError): string {
-  return (error.code && FRIENDLY_AUTH_ERRORS[error.code]) ?? error.message
+async function friendlyAuthError(error: AuthError): Promise<string> {
+  const dict = getDictionary(await getLocale())
+  const errors = dict.authErrors as Record<string, string>
+  return (error.code && errors[error.code]) ?? error.message
 }
 
 async function getOrigin() {
@@ -41,9 +30,12 @@ async function getOrigin() {
 }
 
 export async function signup(input: SignupInput) {
+  const dict = getDictionary(await getLocale())
   const validated = signupSchema.safeParse(input)
   if (!validated.success) {
-    return { error: validated.error.issues[0]?.message ?? "Invalid input." }
+    return {
+      error: validated.error.issues[0]?.message ?? dict.authErrors.invalidInput,
+    }
   }
 
   const { role, fullName, email, password } = validated.data
@@ -59,23 +51,23 @@ export async function signup(input: SignupInput) {
   })
 
   if (error) {
-    return { error: friendlyAuthError(error) }
+    return { error: await friendlyAuthError(error) }
   }
 
   if (!data.session) {
-    return {
-      message:
-        "Account created. Check your email to confirm it before logging in.",
-    }
+    return { message: dict.authErrors.signupSuccess }
   }
 
   redirect(role === "seller" ? "/seller/listings/new" : "/")
 }
 
 export async function login(input: LoginInput) {
+  const dict = getDictionary(await getLocale())
   const validated = loginSchema.safeParse(input)
   if (!validated.success) {
-    return { error: validated.error.issues[0]?.message ?? "Invalid input." }
+    return {
+      error: validated.error.issues[0]?.message ?? dict.authErrors.invalidInput,
+    }
   }
 
   const supabase = await createClient()
@@ -85,8 +77,8 @@ export async function login(input: LoginInput) {
     return {
       error:
         error.code === "invalid_credentials"
-          ? "Invalid email or password. If you just signed up, check your inbox to confirm your email first."
-          : friendlyAuthError(error),
+          ? dict.authErrors.invalid_credentials
+          : await friendlyAuthError(error),
     }
   }
 

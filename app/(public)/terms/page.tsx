@@ -1,8 +1,15 @@
 import { LegalPage } from "@/components/layout/legal-page"
+import { getLocale } from "@/lib/i18n/get-locale"
+import { getDictionary } from "@/lib/i18n/get-dictionary"
 
-export default function TermsPage() {
+export default async function TermsPage() {
+  const dict = getDictionary(await getLocale())
   return (
-    <LegalPage title="Terms of Service" updated="July 30, 2026">
+    <LegalPage
+      title={dict.legal.terms.title}
+      updated="July 30, 2026"
+      lastUpdatedLabel={dict.legal.lastUpdated}
+    >
       <p>
         These Terms of Service (&quot;Terms&quot;) govern your use of Rentsy
         (&quot;we,&quot; &quot;us,&quot; the &quot;Service&quot;). By creating

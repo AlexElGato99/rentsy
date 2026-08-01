@@ -2,25 +2,32 @@ import Link from "next/link"
 
 import { SignupForm } from "@/components/auth/signup-form"
 import { AuthShell } from "@/components/auth/auth-shell"
+import { getLocale } from "@/lib/i18n/get-locale"
+import { getDictionary } from "@/lib/i18n/get-dictionary"
 
-export default function SignupPage() {
+export default async function SignupPage() {
+  const locale = await getLocale()
+  const dict = getDictionary(locale)
+  const t = dict.auth.signup
+
   return (
     <AuthShell
-      title="Create your account"
-      subtitle="Free for both renters and property owners."
+      title={t.title}
+      subtitle={t.subtitle}
+      dict={dict}
       footer={
         <>
-          Already have an account?{" "}
+          {t.haveAccount}{" "}
           <Link
             href="/login"
             className="text-primary underline-offset-4 hover:underline"
           >
-            Log in
+            {t.logIn}
           </Link>
         </>
       }
     >
-      <SignupForm />
+      <SignupForm dict={t} />
     </AuthShell>
   )
 }

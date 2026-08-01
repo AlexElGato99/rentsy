@@ -1,24 +1,22 @@
 import { CheckCircle2 } from "lucide-react"
 
 import { Logo } from "@/components/layout/logo"
-
-const HIGHLIGHTS = [
-  "Free for both renters and property owners",
-  "Message owners directly, no middleman",
-  "No platform fees, ever",
-]
+import type { Dictionary } from "@/lib/i18n/dictionaries/en"
 
 export function AuthShell({
   title,
   subtitle,
   children,
   footer,
+  dict,
 }: {
   title: string
   subtitle: string
   children: React.ReactNode
   footer: React.ReactNode
+  dict: Dictionary
 }) {
+  const auth = dict.auth
   return (
     <div className="flex flex-1 items-center bg-secondary/40">
       <div className="mx-auto grid w-full max-w-6xl gap-8 px-4 py-12 sm:px-6 sm:py-16 lg:grid-cols-2 lg:items-stretch">
@@ -37,21 +35,20 @@ export function AuthShell({
             <span className="flex size-9 items-center justify-center rounded-xl border-2 border-foreground bg-background shadow-brutal-sm">
               R
             </span>
-            Rentsy
+            {dict.common.siteName}
           </span>
 
           <div className="relative rounded-2xl border-2 border-foreground bg-background p-6 shadow-brutal">
             <p className="text-2xl leading-snug font-extrabold text-balance">
-              &ldquo;Listed my apartment in ten minutes and had three
-              messages from renters by the next morning.&rdquo;
+              {auth.testimonial}
             </p>
             <p className="mt-4 text-sm font-bold text-muted-foreground">
-              &mdash; A Rentsy property owner
+              {auth.testimonialAuthor}
             </p>
           </div>
 
           <ul className="relative space-y-3">
-            {HIGHLIGHTS.map((item) => (
+            {auth.highlights.map((item) => (
               <li
                 key={item}
                 className="flex items-center gap-2.5 text-sm font-bold text-primary-foreground"

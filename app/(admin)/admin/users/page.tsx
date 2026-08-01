@@ -1,6 +1,8 @@
 import { createClient } from "@/lib/supabase/server"
 import { createAdminClient } from "@/lib/supabase/admin"
 import { getCurrentProfile } from "@/lib/auth/dal"
+import { getLocale } from "@/lib/i18n/get-locale"
+import { getDictionary } from "@/lib/i18n/get-dictionary"
 import { UserRoleSelect } from "@/components/admin/user-role-select"
 import {
   Table,
@@ -12,7 +14,12 @@ import {
 } from "@/components/ui/table"
 
 export default async function AdminUsersPage() {
-  const currentProfile = await getCurrentProfile()
+  const [currentProfile, locale] = await Promise.all([
+    getCurrentProfile(),
+    getLocale(),
+  ])
+  const dict = getDictionary(locale)
+  const t = dict.dashboard.admin
   const supabase = await createClient()
   const adminClient = createAdminClient()
 
@@ -30,19 +37,19 @@ export default async function AdminUsersPage() {
 
   return (
     <div className="mx-auto w-full max-w-5xl px-4 py-12 sm:px-6">
-      <h1 className="text-3xl font-extrabold tracking-tight">Users</h1>
+      <h1 className="text-3xl font-extrabold tracking-tight">{t.usersTitle}</h1>
       <p className="mt-2 font-medium text-muted-foreground">
-        {profiles?.length ?? 0} accounts registered.
+        {profiles?.length ?? 0} {t.usersSubtitle}
       </p>
 
       <div className="mt-8 overflow-hidden rounded-2xl border-2 border-foreground bg-card shadow-brutal-sm">
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Name</TableHead>
-              <TableHead>Email</TableHead>
-              <TableHead>Joined</TableHead>
-              <TableHead>Role</TableHead>
+              <TableHead>{t.usersTable.name}</TableHead>
+              <TableHead>{t.usersTable.email}</TableHead>
+              <TableHead>{t.usersTable.joined}</TableHead>
+              <TableHead>{t.usersTable.role}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -55,7 +62,7 @@ export default async function AdminUsersPage() {
                   {emailById.get(profile.id) ?? "—"}
                 </TableCell>
                 <TableCell className="text-muted-foreground">
-                  {new Date(profile.created_at).toLocaleDateString()}
+                  {new Date(profile.created_at).toLocaleDateString(locale)}
                 </TableCell>
                 <TableCell>
                   <UserRoleSelect

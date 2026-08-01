@@ -1,19 +1,19 @@
 import Link from "next/link"
 
 import { getCurrentProfile } from "@/lib/auth/dal"
-import { logout } from "@/lib/actions/auth"
+import { getLocale } from "@/lib/i18n/get-locale"
+import { getDictionary } from "@/lib/i18n/get-dictionary"
 import { Button } from "@/components/ui/button"
 import { Logo } from "@/components/layout/logo"
+import { LanguageSwitcher } from "@/components/layout/language-switcher"
+import { ProfileMenu } from "@/components/layout/profile-menu"
 
 export async function Navbar() {
-  const profile = await getCurrentProfile()
-
-  const dashboardHref =
-    profile?.role === "admin"
-      ? "/admin/dashboard"
-      : profile?.role === "seller"
-        ? "/seller/dashboard"
-        : "/account"
+  const [profile, locale] = await Promise.all([
+    getCurrentProfile(),
+    getLocale(),
+  ])
+  const dict = getDictionary(locale)
 
   return (
     <header className="sticky top-0 z-50 border-b-2 border-foreground bg-background">
@@ -25,40 +25,36 @@ export async function Navbar() {
             href="/listings"
             className="rounded-xl px-3 py-2 text-sm font-bold text-foreground transition-colors hover:bg-muted"
           >
-            Browse rentals
+            {dict.common.nav.browse}
           </Link>
           <Link
             href="/about"
             className="hidden rounded-xl px-3 py-2 text-sm font-bold text-foreground transition-colors hover:bg-muted sm:inline-block"
           >
-            About
+            {dict.common.nav.about}
           </Link>
 
           {profile ? (
-            <>
-              <Link href={dashboardHref}>
-                <Button variant="ghost" size="sm">
-                  {profile.full_name ?? "My account"}
-                </Button>
-              </Link>
-              <form action={logout}>
-                <Button type="submit" variant="outline" size="sm">
-                  Log out
-                </Button>
-              </form>
-            </>
+            <ProfileMenu
+              name={profile.full_name}
+              role={profile.role}
+              dict={dict.profileMenu}
+              logOutLabel={dict.common.nav.logOut}
+            />
           ) : (
             <>
               <Link href="/login">
                 <Button variant="ghost" size="sm">
-                  Log in
+                  {dict.common.nav.logIn}
                 </Button>
               </Link>
               <Link href="/signup">
-                <Button size="sm">Sign up</Button>
+                <Button size="sm">{dict.common.nav.signUp}</Button>
               </Link>
             </>
           )}
+
+          <LanguageSwitcher locale={locale} />
         </nav>
       </div>
     </header>

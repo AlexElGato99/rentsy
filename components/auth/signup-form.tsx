@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form"
 
 import { signup } from "@/lib/actions/auth"
 import { signupSchema, type SignupInput } from "@/lib/validators/auth.schema"
+import type { Dictionary } from "@/lib/i18n/dictionaries/en"
 import { Button } from "@/components/ui/button"
 import {
   Form,
@@ -19,15 +20,15 @@ import { Input } from "@/components/ui/input"
 import { RadioPills } from "@/components/ui/radio-pills"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 
-const ROLE_OPTIONS = [
-  { value: "customer", label: "Rent a place" },
-  { value: "seller", label: "List my property" },
-] as const
-
-export function SignupForm() {
+export function SignupForm({ dict }: { dict: Dictionary["auth"]["signup"] }) {
   const [isPending, startTransition] = useTransition()
   const [serverError, setServerError] = useState<string | null>(null)
   const [successMessage, setSuccessMessage] = useState<string | null>(null)
+
+  const roleOptions = [
+    { value: "customer", label: dict.roleCustomer },
+    { value: "seller", label: dict.roleSeller },
+  ] as const
 
   const form = useForm<SignupInput>({
     resolver: zodResolver(signupSchema),
@@ -60,12 +61,12 @@ export function SignupForm() {
           name="role"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>I want to&hellip;</FormLabel>
+              <FormLabel>{dict.roleQuestion}</FormLabel>
               <RadioPills
                 name="role"
                 value={field.value}
                 onChange={field.onChange}
-                options={ROLE_OPTIONS}
+                options={roleOptions}
               />
             </FormItem>
           )}
@@ -76,9 +77,9 @@ export function SignupForm() {
           name="fullName"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Full name</FormLabel>
+              <FormLabel>{dict.fullName}</FormLabel>
               <FormControl>
-                <Input placeholder="Jane Doe" {...field} />
+                <Input placeholder={dict.fullNamePlaceholder} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -90,7 +91,7 @@ export function SignupForm() {
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Email</FormLabel>
+              <FormLabel>{dict.email}</FormLabel>
               <FormControl>
                 <Input type="email" placeholder="you@example.com" {...field} />
               </FormControl>
@@ -104,7 +105,7 @@ export function SignupForm() {
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Password</FormLabel>
+              <FormLabel>{dict.password}</FormLabel>
               <FormControl>
                 <Input type="password" {...field} />
               </FormControl>
@@ -126,7 +127,7 @@ export function SignupForm() {
         )}
 
         <Button type="submit" size="lg" className="w-full" disabled={isPending}>
-          {isPending ? "Creating account..." : "Create account"}
+          {isPending ? dict.submitting : dict.submit}
         </Button>
       </form>
     </Form>

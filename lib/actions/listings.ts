@@ -11,6 +11,7 @@ import type { ListingStatus } from "@/types/supabase"
 function toRow(input: ListingInput) {
   const {
     propertyType,
+    listingType,
     contactEmail,
     contactPhone,
     contactWhatsapp,
@@ -25,6 +26,7 @@ function toRow(input: ListingInput) {
     neighborhood: neighborhood || null,
     address: address || null,
     property_type: propertyType,
+    listing_type: listingType,
     contact_email: contactEmail || null,
     contact_phone: contactPhone || null,
     contact_whatsapp: contactWhatsapp || null,

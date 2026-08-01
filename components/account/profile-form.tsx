@@ -7,6 +7,9 @@ import { toast } from "sonner"
 
 import { updateProfile } from "@/lib/actions/profile"
 import { profileSchema, type ProfileInput } from "@/lib/validators/profile.schema"
+import type { Dictionary } from "@/lib/i18n/dictionaries/en"
+import en from "@/lib/i18n/dictionaries/en"
+import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import {
   Form,
@@ -20,8 +23,12 @@ import { Input } from "@/components/ui/input"
 
 export function ProfileForm({
   defaultValues,
+  dict = en.profileForm,
+  className,
 }: {
   defaultValues: ProfileInput
+  dict?: Dictionary["profileForm"]
+  className?: string
 }) {
   const [isPending, startTransition] = useTransition()
 
@@ -36,7 +43,7 @@ export function ProfileForm({
       if (result?.error) {
         toast.error(result.error)
       } else {
-        toast.success("Profile updated.")
+        toast.success(dict.updated)
       }
     })
   }
@@ -45,14 +52,17 @@ export function ProfileForm({
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="max-w-md space-y-5 rounded-2xl border-2 border-foreground bg-card p-6 shadow-brutal-sm"
+        className={cn(
+          "max-w-md space-y-5 rounded-2xl border-2 border-foreground bg-card p-6 shadow-brutal-sm",
+          className
+        )}
       >
         <FormField
           control={form.control}
           name="fullName"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Full name</FormLabel>
+              <FormLabel>{dict.fullName}</FormLabel>
               <FormControl>
                 <Input {...field} />
               </FormControl>
@@ -65,7 +75,7 @@ export function ProfileForm({
           name="phone"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Phone</FormLabel>
+              <FormLabel>{dict.phone}</FormLabel>
               <FormControl>
                 <Input {...field} value={field.value ?? ""} />
               </FormControl>
@@ -78,7 +88,7 @@ export function ProfileForm({
           name="whatsapp"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>WhatsApp</FormLabel>
+              <FormLabel>{dict.whatsapp}</FormLabel>
               <FormControl>
                 <Input {...field} value={field.value ?? ""} />
               </FormControl>
@@ -87,7 +97,7 @@ export function ProfileForm({
           )}
         />
         <Button type="submit" disabled={isPending}>
-          {isPending ? "Saving..." : "Save changes"}
+          {isPending ? dict.saving : dict.saveChanges}
         </Button>
       </form>
     </Form>

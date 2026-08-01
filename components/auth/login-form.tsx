@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form"
 
 import { login } from "@/lib/actions/auth"
 import { loginSchema, type LoginInput } from "@/lib/validators/auth.schema"
+import type { Dictionary } from "@/lib/i18n/dictionaries/en"
 import { Button } from "@/components/ui/button"
 import {
   Form,
@@ -18,7 +19,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 
-export function LoginForm() {
+export function LoginForm({ dict }: { dict: Dictionary["auth"]["login"] }) {
   const [isPending, startTransition] = useTransition()
   const [serverError, setServerError] = useState<string | null>(null)
 
@@ -45,7 +46,7 @@ export function LoginForm() {
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Email</FormLabel>
+              <FormLabel>{dict.email}</FormLabel>
               <FormControl>
                 <Input type="email" placeholder="you@example.com" {...field} />
               </FormControl>
@@ -59,7 +60,7 @@ export function LoginForm() {
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Password</FormLabel>
+              <FormLabel>{dict.password}</FormLabel>
               <FormControl>
                 <Input type="password" {...field} />
               </FormControl>
@@ -75,7 +76,7 @@ export function LoginForm() {
         )}
 
         <Button type="submit" size="lg" className="w-full" disabled={isPending}>
-          {isPending ? "Logging in..." : "Log in"}
+          {isPending ? dict.submitting : dict.submit}
         </Button>
       </form>
     </Form>

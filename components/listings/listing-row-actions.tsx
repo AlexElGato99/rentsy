@@ -6,6 +6,8 @@ import { toast } from "sonner"
 
 import { deleteListing, setListingStatus } from "@/lib/actions/listings"
 import type { ListingStatus } from "@/types/supabase"
+import type { Dictionary } from "@/lib/i18n/dictionaries/en"
+import en from "@/lib/i18n/dictionaries/en"
 import { Button } from "@/components/ui/button"
 import {
   AlertDialog,
@@ -23,10 +25,14 @@ export function ListingRowActions({
   listingId,
   status,
   editHref,
+  dict = en.dashboard.rowActions,
+  actionsDict = en.common.actions,
 }: {
   listingId: string
   status: ListingStatus
   editHref?: string
+  dict?: Dictionary["dashboard"]["rowActions"]
+  actionsDict?: Dictionary["common"]["actions"]
 }) {
   const [isPending, startTransition] = useTransition()
 
@@ -38,9 +44,7 @@ export function ListingRowActions({
       if (result?.error) {
         toast.error(result.error)
       } else {
-        toast.success(
-          next === "published" ? "Listing published." : "Listing unpublished."
-        )
+        toast.success(next === "published" ? dict.published : dict.unpublished)
       }
     })
   }
@@ -49,7 +53,7 @@ export function ListingRowActions({
     startTransition(async () => {
       const result = await deleteListing(listingId)
       if (result?.error) toast.error(result.error)
-      else toast.success("Listing deleted.")
+      else toast.success(dict.deleted)
     })
   }
 
@@ -58,7 +62,7 @@ export function ListingRowActions({
       {editHref && (
         <Link href={editHref}>
           <Button variant="outline" size="sm">
-            Edit
+            {actionsDict.edit}
           </Button>
         </Link>
       )}
@@ -68,26 +72,25 @@ export function ListingRowActions({
         onClick={toggleStatus}
         disabled={isPending}
       >
-        {status === "published" ? "Unpublish" : "Publish"}
+        {status === "published" ? actionsDict.unpublish : actionsDict.publish}
       </Button>
       <AlertDialog>
         <AlertDialogTrigger asChild>
           <Button variant="destructive" size="sm" disabled={isPending}>
-            Delete
+            {actionsDict.delete}
           </Button>
         </AlertDialogTrigger>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete this listing?</AlertDialogTitle>
+            <AlertDialogTitle>{dict.deleteConfirmTitle}</AlertDialogTitle>
             <AlertDialogDescription>
-              This permanently removes the listing and its photos. This
-              can&apos;t be undone.
+              {dict.deleteConfirmDescription}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>{actionsDict.cancel}</AlertDialogCancel>
             <AlertDialogAction onClick={handleDelete}>
-              Delete
+              {actionsDict.delete}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

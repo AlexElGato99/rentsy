@@ -1,33 +1,38 @@
 import Link from "next/link"
 
 import { Logo } from "@/components/layout/logo"
+import { getLocale } from "@/lib/i18n/get-locale"
+import { getDictionary } from "@/lib/i18n/get-dictionary"
 
-const COLUMNS = [
-  {
-    title: "Renters",
-    links: [
-      { label: "Browse listings", href: "/listings" },
-      { label: "Create an account", href: "/signup" },
-    ],
-  },
-  {
-    title: "Owners",
-    links: [
-      { label: "List your property", href: "/signup" },
-      { label: "Seller dashboard", href: "/seller/dashboard" },
-    ],
-  },
-  {
-    title: "Company",
-    links: [
-      { label: "About us", href: "/about" },
-      { label: "Terms of Service", href: "/terms" },
-      { label: "Privacy Policy", href: "/privacy" },
-    ],
-  },
-]
+export async function Footer() {
+  const locale = await getLocale()
+  const dict = getDictionary(locale)
 
-export function Footer() {
+  const columns = [
+    {
+      title: dict.footer.renters.title,
+      links: [
+        { label: dict.footer.renters.browse, href: "/listings" },
+        { label: dict.footer.renters.createAccount, href: "/signup" },
+      ],
+    },
+    {
+      title: dict.footer.owners.title,
+      links: [
+        { label: dict.footer.owners.list, href: "/signup" },
+        { label: dict.footer.owners.dashboard, href: "/seller/dashboard" },
+      ],
+    },
+    {
+      title: dict.footer.company.title,
+      links: [
+        { label: dict.footer.company.about, href: "/about" },
+        { label: dict.footer.company.terms, href: "/terms" },
+        { label: dict.footer.company.privacy, href: "/privacy" },
+      ],
+    },
+  ]
+
   return (
     <footer className="border-t-2 border-foreground bg-secondary/40">
       <div className="mx-auto w-full max-w-6xl px-4 py-12 sm:px-6">
@@ -35,12 +40,11 @@ export function Footer() {
           <div>
             <Logo />
             <p className="mt-3 max-w-xs text-sm font-medium text-muted-foreground">
-              Apartments, houses, and rooms listed directly by owners &mdash;
-              no middleman, no platform fees.
+              {dict.footer.tagline}
             </p>
           </div>
 
-          {COLUMNS.map((column) => (
+          {columns.map((column) => (
             <div key={column.title}>
               <p className="text-sm font-extrabold">{column.title}</p>
               <ul className="mt-3 space-y-2">
@@ -61,10 +65,10 @@ export function Footer() {
 
         <div className="mt-10 flex flex-col items-center justify-between gap-3 border-t-2 border-foreground pt-6 sm:flex-row">
           <p className="text-sm font-medium text-muted-foreground">
-            &copy; {new Date().getFullYear()} Rentsy. All rights reserved.
+            &copy; {new Date().getFullYear()} {dict.footer.copyright}
           </p>
           <p className="text-sm font-medium text-muted-foreground">
-            Built for renters and owners, everywhere.
+            {dict.footer.builtFor}
           </p>
         </div>
       </div>

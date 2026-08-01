@@ -2,55 +2,22 @@ import Link from "next/link"
 import { ArrowRight, MessageCircle, ShieldCheck, Wallet } from "lucide-react"
 
 import { createClient } from "@/lib/supabase/server"
+import { getLocale } from "@/lib/i18n/get-locale"
+import { getDictionary } from "@/lib/i18n/get-dictionary"
 import { Button } from "@/components/ui/button"
 import { SearchBar } from "@/components/listings/search-bar"
 import { ListingCard } from "@/components/listings/listing-card"
 
-const FEATURES = [
-  {
-    icon: Wallet,
-    title: "No platform fees",
-    description:
-      "List for free and contact owners directly. Rentsy never takes a cut of your rent.",
-  },
-  {
-    icon: MessageCircle,
-    title: "Message owners directly",
-    description:
-      "Ask questions and arrange viewings right from the listing, no phone tag required.",
-  },
-  {
-    icon: ShieldCheck,
-    title: "Real listings, real owners",
-    description:
-      "Every account is verified through sign-up, and reviews keep everyone honest.",
-  },
-]
-
-const STEPS = [
-  {
-    step: "1",
-    title: "Search your area",
-    description: "Filter by city, neighborhood, price, and number of rooms.",
-  },
-  {
-    step: "2",
-    title: "Message the owner",
-    description: "Ask questions or request a viewing straight from the listing.",
-  },
-  {
-    step: "3",
-    title: "Move in",
-    description: "Agree on the details together and arrange your rental directly.",
-  },
-]
+const FEATURE_ICONS = [Wallet, MessageCircle, ShieldCheck]
 
 export default async function Home() {
-  const supabase = await createClient()
+  const [supabase, locale] = await Promise.all([createClient(), getLocale()])
+  const dict = getDictionary(locale)
+
   const { data: latestListings } = await supabase
     .from("listings")
     .select(
-      "id, title, price, city, neighborhood, bedrooms, bathrooms, listing_images(storage_path, position)"
+      "id, title, price, currency, listing_type, city, country, neighborhood, bedrooms, bathrooms, listing_images(storage_path, position)"
     )
     .eq("status", "published")
     .order("created_at", { ascending: false })
@@ -61,24 +28,23 @@ export default async function Home() {
       <section className="relative overflow-hidden border-b-2 border-foreground bg-accent/30">
         <div className="mx-auto flex w-full max-w-6xl flex-col items-center px-4 py-20 text-center sm:px-6 sm:py-28">
           <span className="mb-5 inline-flex items-center gap-1.5 rounded-full border-2 border-foreground bg-accent px-4 py-1.5 text-sm font-bold shadow-brutal-sm">
-            Free for owners &middot; No hidden fees
+            {dict.home.badge}
           </span>
           <h1 className="max-w-2xl text-5xl font-extrabold tracking-tight text-balance sm:text-6xl">
-            Find your next place to rent
+            {dict.home.title}
           </h1>
           <p className="mt-4 max-w-xl text-lg font-medium text-muted-foreground text-balance">
-            Apartments, houses, and rooms listed directly by owners. Browse,
-            message, and arrange your rental &mdash; no middleman.
+            {dict.home.subtitle}
           </p>
 
           <div className="mt-10 w-full">
-            <SearchBar />
+            <SearchBar dict={dict.searchBar} />
           </div>
 
           <div className="mt-6">
             <Link href="/signup">
               <Button variant="outline" size="sm">
-                Own a property? List it for free &rarr;
+                {dict.home.listPropertyCta}
               </Button>
             </Link>
           </div>
@@ -90,16 +56,16 @@ export default async function Home() {
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div>
               <h2 className="text-3xl font-extrabold tracking-tight">
-                Latest listings
+                {dict.home.latest.title}
               </h2>
               <p className="mt-2 font-medium text-muted-foreground">
-                Fresh off the market &mdash; published directly by owners.
+                {dict.home.latest.subtitle}
               </p>
             </div>
             <Link href="/listings" className="hidden sm:block">
               <Button variant="outline">
-                Explore more
-                <ArrowRight className="size-4" />
+                {dict.common.actions.exploreMore}
+                <ArrowRight className="size-4 rtl:rotate-180" />
               </Button>
             </Link>
           </div>
@@ -115,11 +81,15 @@ export default async function Home() {
                   id={listing.id}
                   title={listing.title}
                   price={listing.price}
+                  currency={listing.currency}
+                  listingType={listing.listing_type}
                   city={listing.city}
+                  country={listing.country}
                   neighborhood={listing.neighborhood}
                   bedrooms={listing.bedrooms}
                   bathrooms={listing.bathrooms}
                   coverImagePath={cover?.storage_path}
+                  dict={dict.listings.card}
                 />
               )
             })}
@@ -128,8 +98,8 @@ export default async function Home() {
           <div className="mt-8 flex justify-center sm:hidden">
             <Link href="/listings">
               <Button variant="outline">
-                Explore more
-                <ArrowRight className="size-4" />
+                {dict.common.actions.exploreMore}
+                <ArrowRight className="size-4 rtl:rotate-180" />
               </Button>
             </Link>
           </div>
@@ -138,40 +108,43 @@ export default async function Home() {
 
       <section className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6">
         <div className="grid gap-6 sm:grid-cols-3">
-          {FEATURES.map(({ icon: Icon, title, description }) => (
-            <div
-              key={title}
-              className="flex flex-col items-start gap-3 rounded-2xl border-2 border-foreground bg-card p-6 shadow-brutal-sm"
-            >
-              <span className="flex size-12 items-center justify-center rounded-xl border-2 border-foreground bg-primary text-primary-foreground">
-                <Icon className="size-5" />
-              </span>
-              <h3 className="text-lg font-extrabold">{title}</h3>
-              <p className="text-sm font-medium text-muted-foreground">
-                {description}
-              </p>
-            </div>
-          ))}
+          {dict.home.features.map((feature, index) => {
+            const Icon = FEATURE_ICONS[index]
+            return (
+              <div
+                key={feature.title}
+                className="flex flex-col items-start gap-3 rounded-2xl border-2 border-foreground bg-card p-6 shadow-brutal-sm"
+              >
+                <span className="flex size-12 items-center justify-center rounded-xl border-2 border-foreground bg-primary text-primary-foreground">
+                  <Icon className="size-5" />
+                </span>
+                <h3 className="text-lg font-extrabold">{feature.title}</h3>
+                <p className="text-sm font-medium text-muted-foreground">
+                  {feature.description}
+                </p>
+              </div>
+            )
+          })}
         </div>
       </section>
 
       <section className="border-y-2 border-foreground bg-secondary/60">
         <div className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6">
           <h2 className="text-3xl font-extrabold tracking-tight">
-            How it works
+            {dict.home.steps.title}
           </h2>
           <div className="mt-8 grid gap-6 sm:grid-cols-3">
-            {STEPS.map(({ step, title, description }) => (
+            {dict.home.steps.items.map((item) => (
               <div
-                key={step}
+                key={item.step}
                 className="rounded-2xl border-2 border-foreground bg-card p-6 shadow-brutal-sm"
               >
                 <span className="flex size-10 items-center justify-center rounded-full border-2 border-foreground bg-accent text-lg font-extrabold shadow-brutal-sm">
-                  {step}
+                  {item.step}
                 </span>
-                <h3 className="mt-3 text-lg font-extrabold">{title}</h3>
+                <h3 className="mt-3 text-lg font-extrabold">{item.title}</h3>
                 <p className="mt-1 text-sm font-medium text-muted-foreground">
-                  {description}
+                  {item.description}
                 </p>
               </div>
             ))}
@@ -182,10 +155,10 @@ export default async function Home() {
       <section className="mx-auto w-full max-w-6xl px-4 py-20 sm:px-6">
         <div className="flex flex-col items-center rounded-3xl border-2 border-foreground bg-primary px-6 py-14 text-center shadow-brutal">
           <h2 className="text-3xl font-extrabold tracking-tight text-primary-foreground">
-            Have a property to rent out?
+            {dict.home.cta.title}
           </h2>
           <p className="mx-auto mt-2 max-w-md font-medium text-primary-foreground/80">
-            Create a free seller account and publish your listing in minutes.
+            {dict.home.cta.subtitle}
           </p>
           <div className="mt-6">
             <Link href="/signup">
@@ -194,7 +167,7 @@ export default async function Home() {
                 variant="outline"
                 className="bg-background"
               >
-                List your property
+                {dict.home.cta.button}
               </Button>
             </Link>
           </div>

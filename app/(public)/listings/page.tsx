@@ -3,6 +3,8 @@ import { SearchX } from "lucide-react"
 import { createClient } from "@/lib/supabase/server"
 import { ListingCard } from "@/components/listings/listing-card"
 import { PROPERTY_TYPES } from "@/lib/validators/listing.schema"
+import { getLocale } from "@/lib/i18n/get-locale"
+import { getDictionary } from "@/lib/i18n/get-dictionary"
 
 export default async function ListingsPage({
   searchParams,
@@ -10,12 +12,14 @@ export default async function ListingsPage({
   searchParams: Promise<{ city?: string; type?: string }>
 }) {
   const { city, type } = await searchParams
-  const supabase = await createClient()
+  const [supabase, locale] = await Promise.all([createClient(), getLocale()])
+  const dict = getDictionary(locale)
+  const t = dict.listings.browse
 
   let query = supabase
     .from("listings")
     .select(
-      "id, title, price, city, neighborhood, bedrooms, bathrooms, status, listing_images(storage_path, position)"
+      "id, title, price, currency, listing_type, city, country, neighborhood, bedrooms, bathrooms, status, listing_images(storage_path, position)"
     )
     .eq("status", "published")
     .order("created_at", { ascending: false })
@@ -31,15 +35,14 @@ export default async function ListingsPage({
   }
 
   const { data: listings } = await query
+  const count = listings?.length ?? 0
 
   return (
     <div className="mx-auto w-full max-w-6xl px-4 py-12 sm:px-6">
-      <h1 className="text-3xl font-extrabold tracking-tight">
-        Browse listings
-      </h1>
+      <h1 className="text-3xl font-extrabold tracking-tight">{t.title}</h1>
       <p className="mt-2 font-medium text-muted-foreground">
-        {listings?.length ?? 0} place{listings?.length === 1 ? "" : "s"}{" "}
-        available{city ? ` in "${city}"` : ""}.
+        {count} {count === 1 ? t.place : t.places} {t.countSuffix}
+        {city ? ` ${t.inCity(city)}` : ""}.
       </p>
 
       {listings && listings.length > 0 ? (
@@ -54,11 +57,15 @@ export default async function ListingsPage({
                 id={listing.id}
                 title={listing.title}
                 price={listing.price}
+                currency={listing.currency}
+                listingType={listing.listing_type}
                 city={listing.city}
+                country={listing.country}
                 neighborhood={listing.neighborhood}
                 bedrooms={listing.bedrooms}
                 bathrooms={listing.bathrooms}
                 coverImagePath={cover?.storage_path}
+                dict={dict.listings.card}
               />
             )
           })}
@@ -68,10 +75,9 @@ export default async function ListingsPage({
           <span className="flex size-14 items-center justify-center rounded-2xl border-2 border-foreground bg-accent shadow-brutal-sm">
             <SearchX className="size-6" />
           </span>
-          <p className="text-lg font-extrabold">No listings found</p>
+          <p className="text-lg font-extrabold">{t.emptyTitle}</p>
           <p className="max-w-sm text-sm font-medium text-muted-foreground">
-            Try a different city, or check back later as more sellers publish
-            properties.
+            {t.emptyDescription}
           </p>
         </div>
       )}
