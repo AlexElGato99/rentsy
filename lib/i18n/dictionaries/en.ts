@@ -2,8 +2,11 @@ const en = {
   common: {
     siteName: "Rentsy",
     nav: {
+      home: "Home",
       browse: "Browse rentals",
       about: "About",
+      faq: "FAQs",
+      contact: "Contact",
       logIn: "Log in",
       signUp: "Sign up",
       logOut: "Log out",
@@ -39,6 +42,8 @@ const en = {
     company: {
       title: "Company",
       about: "About us",
+      faq: "FAQs",
+      contact: "Contact us",
       terms: "Terms of Service",
       privacy: "Privacy Policy",
     },
@@ -378,6 +383,81 @@ const en = {
     lastUpdated: "Last updated",
     terms: { title: "Terms of Service" },
     privacy: { title: "Privacy Policy" },
+  },
+
+  faq: {
+    badge: "FAQs",
+    title: "Frequently asked questions",
+    subtitle: "Everything you need to know about renting and listing on Rentsy.",
+    viewAll: "View all FAQs",
+    stillHaveQuestions: "Still have questions?",
+    contactCtaText: "Can't find the answer you're looking for? Our team is happy to help.",
+    contactCta: "Contact us",
+    items: [
+      {
+        question: "Is Rentsy free to use?",
+        answer:
+          "Yes. Browsing listings and messaging owners is free for renters, and creating a seller account to list your property is free as well. Rentsy never takes a cut of your rent.",
+      },
+      {
+        question: "How do I list my property?",
+        answer:
+          "Create a free seller account, choose \"List my property\" during signup, then fill in your listing details — photos, price, location, and contact info. Your listing publishes immediately, no approval wait.",
+      },
+      {
+        question: "Does Rentsy handle payments or contracts?",
+        answer:
+          "No. Rentsy is a listings marketplace, not a booking platform. Renters and owners connect directly through the listing and arrange viewings, rental terms, and payments themselves, off-platform.",
+      },
+      {
+        question: "How do I contact a property owner?",
+        answer:
+          "Open any listing and use the call, WhatsApp, or email details the owner provided to reach out directly and arrange a viewing.",
+      },
+      {
+        question: "Can I edit or unpublish my listing after it's live?",
+        answer:
+          "Yes. From your seller dashboard you can edit any listing's details and photos at any time, and publish or unpublish it whenever you like.",
+      },
+      {
+        question: "What information do I need to sign up?",
+        answer:
+          "Just your name, email, and a password. Choose whether you're renting or listing a property, and you're ready to go.",
+      },
+      {
+        question: "Is my information safe on Rentsy?",
+        answer:
+          "We only ask for what's needed to create your account and list or search for properties. Contact details you add to a listing are shown to renters so they can reach you directly — never share sensitive information like passwords or payment details through messages.",
+      },
+      {
+        question: "Can I use Rentsy outside Morocco?",
+        answer:
+          "Yes. Rentsy started in Morocco but supports listings worldwide — pick your country, city, and preferred currency when creating a listing.",
+      },
+      {
+        question: "Can I change the site language?",
+        answer:
+          "Yes. Use the language switcher in the top navigation bar to switch between English and Arabic at any time.",
+      },
+    ],
+  },
+
+  contact: {
+    badge: "Contact us",
+    title: "Get in touch",
+    subtitle:
+      "Have a question, feedback, or ran into an issue? We'd love to hear from you.",
+    emailTitle: "Email us",
+    emailDescription: "The fastest way to reach our team.",
+    faqTitle: "Check the FAQs",
+    faqDescription: "Many common questions are already answered there.",
+    faqCta: "Browse FAQs",
+  },
+
+  notFound: {
+    title: "Page not found",
+    description: "The page you're looking for doesn't exist or may have moved.",
+    backHome: "Back to home",
   },
 
   confirmed: {

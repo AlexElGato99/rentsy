@@ -22,6 +22,12 @@ export async function Navbar() {
 
         <nav className="flex items-center gap-2 sm:gap-3">
           <Link
+            href="/"
+            className="hidden rounded-xl px-3 py-2 text-sm font-bold text-foreground transition-colors hover:bg-muted sm:inline-block"
+          >
+            {dict.common.nav.home}
+          </Link>
+          <Link
             href="/listings"
             className="rounded-xl px-3 py-2 text-sm font-bold text-foreground transition-colors hover:bg-muted"
           >
@@ -32,6 +38,12 @@ export async function Navbar() {
             className="hidden rounded-xl px-3 py-2 text-sm font-bold text-foreground transition-colors hover:bg-muted sm:inline-block"
           >
             {dict.common.nav.about}
+          </Link>
+          <Link
+            href="/faq"
+            className="hidden rounded-xl px-3 py-2 text-sm font-bold text-foreground transition-colors hover:bg-muted sm:inline-block"
+          >
+            {dict.common.nav.faq}
           </Link>
 
           {profile ? (

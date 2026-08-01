@@ -27,6 +27,8 @@ export async function Footer() {
       title: dict.footer.company.title,
       links: [
         { label: dict.footer.company.about, href: "/about" },
+        { label: dict.footer.company.faq, href: "/faq" },
+        { label: dict.footer.company.contact, href: "/contact" },
         { label: dict.footer.company.terms, href: "/terms" },
         { label: dict.footer.company.privacy, href: "/privacy" },
       ],

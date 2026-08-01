@@ -7,6 +7,12 @@ import { getDictionary } from "@/lib/i18n/get-dictionary"
 import { Button } from "@/components/ui/button"
 import { SearchBar } from "@/components/listings/search-bar"
 import { ListingCard } from "@/components/listings/listing-card"
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion"
 
 const FEATURE_ICONS = [Wallet, MessageCircle, ShieldCheck]
 
@@ -149,6 +155,41 @@ export default async function Home() {
               </div>
             ))}
           </div>
+        </div>
+      </section>
+
+      <section className="mx-auto w-full max-w-4xl px-4 py-16 sm:px-6">
+        <div className="text-center">
+          <h2 className="text-3xl font-extrabold tracking-tight">
+            {dict.faq.title}
+          </h2>
+          <p className="mt-2 font-medium text-muted-foreground">
+            {dict.faq.subtitle}
+          </p>
+        </div>
+
+        <div className="mt-8 rounded-3xl border-2 border-foreground bg-card p-6 text-start shadow-brutal-sm sm:p-8">
+          <Accordion type="single" collapsible>
+            {dict.faq.items.slice(0, 5).map((item, index) => (
+              <AccordionItem key={item.question} value={`item-${index}`}>
+                <AccordionTrigger className="text-base font-extrabold">
+                  {item.question}
+                </AccordionTrigger>
+                <AccordionContent className="text-base leading-relaxed font-medium text-muted-foreground">
+                  {item.answer}
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
+        </div>
+
+        <div className="mt-8 flex justify-center">
+          <Link href="/faq">
+            <Button variant="outline">
+              {dict.faq.viewAll}
+              <ArrowRight className="size-4 rtl:rotate-180" />
+            </Button>
+          </Link>
         </div>
       </section>
 
