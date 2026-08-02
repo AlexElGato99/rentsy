@@ -6,7 +6,11 @@ import { revalidatePath } from "next/cache"
 import { createClient } from "@/lib/supabase/server"
 import { getCurrentProfile } from "@/lib/auth/dal"
 import { listingSchema, type ListingInput } from "@/lib/validators/listing.schema"
+import { processImageToWebp, ImageTooSmallError } from "@/lib/listings/process-image"
 import type { ListingStatus } from "@/types/supabase"
+
+const MAX_IMAGE_SIZE_MB = 5
+const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"]
 
 function toRow(input: ListingInput) {
   const {
@@ -130,21 +134,96 @@ export async function setListingStatus(
   return {}
 }
 
-export async function attachListingImage(
+export async function uploadListingImage(
   listingId: string,
-  storagePath: string,
-  position: number
+  position: number,
+  formData: FormData
 ) {
+  const file = formData.get("file")
+  if (!(file instanceof File)) {
+    return { error: "No file provided." }
+  }
+  if (!ACCEPTED_IMAGE_TYPES.includes(file.type)) {
+    return { error: `${file.name}: only JPEG, PNG, or WEBP images are allowed.` }
+  }
+  if (file.size > MAX_IMAGE_SIZE_MB * 1024 * 1024) {
+    return { error: `${file.name}: file is larger than ${MAX_IMAGE_SIZE_MB}MB.` }
+  }
+
   const supabase = await createClient()
-  const { error } = await supabase
+
+  let webpBuffer: Buffer
+  try {
+    const inputBuffer = Buffer.from(await file.arrayBuffer())
+    webpBuffer = await processImageToWebp(inputBuffer)
+  } catch (err) {
+    if (err instanceof ImageTooSmallError) {
+      return {
+        error: `${file.name}: too small (${err.width}x${err.height}px). Use a photo at least 800x600px.`,
+      }
+    }
+    return { error: `${file.name}: could not process this image.` }
+  }
+
+  const storagePath = `${listingId}/${crypto.randomUUID()}.webp`
+  const { error: uploadError } = await supabase.storage
+    .from("listing-images")
+    .upload(storagePath, webpBuffer, {
+      contentType: "image/webp",
+      upsert: false,
+    })
+
+  if (uploadError) {
+    return { error: `${file.name}: could not upload this image.` }
+  }
+
+  const { error: insertError } = await supabase
     .from("listing_images")
     .insert({ listing_id: listingId, storage_path: storagePath, position })
 
-  if (error) {
+  if (insertError) {
+    await supabase.storage.from("listing-images").remove([storagePath])
     return { error: "Could not attach image." }
   }
 
   revalidatePath(`/seller/listings/${listingId}/edit`)
+  revalidatePath(`/listings/${listingId}`)
+  revalidatePath("/listings")
+  revalidatePath("/")
+  return {}
+}
+
+export async function setListingCoverImage(listingId: string, imageId: string) {
+  const supabase = await createClient()
+  const { data: images, error: fetchError } = await supabase
+    .from("listing_images")
+    .select("id")
+    .eq("listing_id", listingId)
+    .order("position", { ascending: true })
+
+  if (fetchError || !images) {
+    return { error: "Could not update the featured image." }
+  }
+
+  const reordered = [
+    imageId,
+    ...images.map((img) => img.id).filter((id) => id !== imageId),
+  ]
+
+  const results = await Promise.all(
+    reordered.map((id, position) =>
+      supabase.from("listing_images").update({ position }).eq("id", id)
+    )
+  )
+
+  if (results.some((r) => r.error)) {
+    return { error: "Could not update the featured image." }
+  }
+
+  revalidatePath(`/seller/listings/${listingId}/edit`)
+  revalidatePath(`/listings/${listingId}`)
+  revalidatePath("/listings")
+  revalidatePath("/")
   return {}
 }
 

@@ -2,13 +2,12 @@ import { notFound } from "next/navigation"
 import { Bath, Bed, Check, DoorOpen, Mail, MapPin, Phone } from "lucide-react"
 
 import { createClient } from "@/lib/supabase/server"
-import { listingImageUrl } from "@/lib/listings/image-url"
 import { formatPrice } from "@/lib/utils/format"
 import type { Amenity } from "@/lib/listings/amenities"
 import { getLocale } from "@/lib/i18n/get-locale"
 import { getDictionary } from "@/lib/i18n/get-dictionary"
 import { Badge } from "@/components/ui/badge"
-import { CoverImage } from "@/components/listings/cover-image"
+import { ListingGallery } from "@/components/listings/listing-gallery"
 
 function whatsappHref(value: string) {
   const digits = value.replace(/[^0-9]/g, "")
@@ -53,35 +52,13 @@ export default async function ListingDetailPage({
         </div>
       )}
 
-      <div className="grid gap-3 sm:aspect-[16/7] sm:grid-cols-4">
-        <div className="relative aspect-[4/3] min-h-0 overflow-hidden rounded-2xl border-2 border-foreground bg-muted sm:aspect-auto sm:col-span-3">
-          {gallery[0] ? (
-            <CoverImage
-              src={listingImageUrl(gallery[0].storage_path)}
-              alt={listing.title}
-              className="size-full"
-            />
-          ) : (
-            <div className="flex size-full items-center justify-center font-bold text-muted-foreground">
-              {t.noPhotos}
-            </div>
-          )}
-        </div>
-        <div className="hidden min-h-0 grid-rows-3 gap-3 overflow-hidden sm:grid">
-          {gallery.slice(1, 4).map((image) => (
-            <div
-              key={image.id}
-              className="min-h-0 overflow-hidden rounded-2xl border-2 border-foreground bg-muted"
-            >
-              <CoverImage
-                src={listingImageUrl(image.storage_path)}
-                alt=""
-                className="size-full"
-              />
-            </div>
-          ))}
-        </div>
-      </div>
+      <ListingGallery
+        images={gallery}
+        alt={listing.title}
+        noPhotosLabel={t.noPhotos}
+        previousLabel={t.previousImage}
+        nextLabel={t.nextImage}
+      />
 
       <div className="mt-8 grid gap-10 sm:grid-cols-3">
         <div className="sm:col-span-2">

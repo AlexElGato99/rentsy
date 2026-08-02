@@ -2,11 +2,15 @@
 
 import { useRef, useState, useTransition } from "react"
 import { toast } from "sonner"
-import { Upload, X } from "lucide-react"
+import { Star, Upload, X } from "lucide-react"
 
-import { createClient } from "@/lib/supabase/client"
-import { attachListingImage, deleteListingImage } from "@/lib/actions/listings"
+import {
+  deleteListingImage,
+  setListingCoverImage,
+  uploadListingImage,
+} from "@/lib/actions/listings"
 import { listingImageUrl } from "@/lib/listings/image-url"
+import { cn } from "@/lib/utils"
 
 const MAX_IMAGES = 10
 const MAX_SIZE_MB = 5
@@ -49,25 +53,15 @@ export function ImageUploader({
     if (validFiles.length === 0) return
 
     setIsUploading(true)
-    const supabase = createClient()
 
     for (const [index, file] of validFiles.entries()) {
-      const ext = file.name.split(".").pop()
-      const path = `${listingId}/${crypto.randomUUID()}.${ext}`
+      const formData = new FormData()
+      formData.set("file", file)
 
-      const { error: uploadError } = await supabase.storage
-        .from("listing-images")
-        .upload(path, file)
-
-      if (uploadError) {
-        toast.error(`Could not upload ${file.name}.`)
-        continue
-      }
-
-      const result = await attachListingImage(
+      const result = await uploadListingImage(
         listingId,
-        path,
-        images.length + index
+        images.length + index,
+        formData
       )
       if (result?.error) {
         toast.error(result.error)
@@ -85,30 +79,64 @@ export function ImageUploader({
     })
   }
 
+  function handleSetCover(imageId: string) {
+    startTransition(async () => {
+      const result = await setListingCoverImage(listingId, imageId)
+      if (result?.error) {
+        toast.error(result.error)
+      } else {
+        toast.success("Featured image updated.")
+      }
+    })
+  }
+
   return (
     <div className="space-y-3">
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        {images.map((image) => (
-          <div
-            key={image.id}
-            className="group relative aspect-square overflow-hidden rounded-xl border-2 border-foreground"
-          >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={listingImageUrl(image.storage_path)}
-              alt=""
-              className="size-full object-cover"
-            />
-            <button
-              type="button"
-              onClick={() => handleDelete(image.id)}
-              disabled={isPending}
-              className="absolute top-1.5 right-1.5 flex size-7 items-center justify-center rounded-full border-2 border-foreground bg-background text-foreground shadow-brutal-sm hover:bg-destructive hover:text-white"
+        {images.map((image, index) => {
+          const isCover = index === 0
+          return (
+            <div
+              key={image.id}
+              className="group relative aspect-square overflow-hidden rounded-xl border-2 border-foreground"
             >
-              <X className="size-3.5" />
-            </button>
-          </div>
-        ))}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={listingImageUrl(image.storage_path)}
+                alt=""
+                className="size-full object-cover"
+              />
+              {isCover && (
+                <span className="absolute top-1.5 left-1.5 flex items-center gap-1 rounded-full border-2 border-foreground bg-primary px-2 py-0.5 text-xs font-bold text-primary-foreground shadow-brutal-sm">
+                  <Star className="size-3 fill-current" />
+                  Featured
+                </span>
+              )}
+              <button
+                type="button"
+                onClick={() => handleSetCover(image.id)}
+                disabled={isPending || isCover}
+                title={isCover ? "Featured image" : "Set as featured image"}
+                className={cn(
+                  "absolute bottom-1.5 left-1.5 flex size-7 items-center justify-center rounded-full border-2 border-foreground shadow-brutal-sm",
+                  isCover
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-background text-foreground opacity-0 transition-opacity group-hover:opacity-100 hover:bg-primary hover:text-primary-foreground"
+                )}
+              >
+                <Star className={cn("size-3.5", isCover && "fill-current")} />
+              </button>
+              <button
+                type="button"
+                onClick={() => handleDelete(image.id)}
+                disabled={isPending}
+                className="absolute top-1.5 right-1.5 flex size-7 items-center justify-center rounded-full border-2 border-foreground bg-background text-foreground shadow-brutal-sm hover:bg-destructive hover:text-white"
+              >
+                <X className="size-3.5" />
+              </button>
+            </div>
+          )
+        })}
 
         <label className="flex aspect-square cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-foreground text-center text-sm font-bold text-muted-foreground hover:bg-muted">
           <Upload className="size-5" />
@@ -133,6 +161,11 @@ export function ImageUploader({
           Photos are cropped to fill their frame, so portrait or square shots
           may lose their edges. JPEG, PNG, or WEBP, up to {MAX_IMAGES}{" "}
           photos, {MAX_SIZE_MB}MB each.
+        </p>
+        <p className="mt-1 text-xs font-medium text-muted-foreground">
+          Hover a photo and click the star to make it the featured image
+          &mdash; it&apos;s used as the thumbnail on the home and browse
+          pages.
         </p>
       </div>
     </div>

@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Logo } from "@/components/layout/logo"
 import { LanguageSwitcher } from "@/components/layout/language-switcher"
 import { ProfileMenu } from "@/components/layout/profile-menu"
+import { MobileNav } from "@/components/layout/mobile-nav"
 
 export async function Navbar() {
   const [profile, locale] = await Promise.all([
@@ -20,10 +21,10 @@ export async function Navbar() {
       <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-4 sm:px-6">
         <Logo />
 
-        <nav className="flex items-center gap-2 sm:gap-3">
+        <nav className="hidden items-center gap-2 sm:flex sm:gap-3">
           <Link
             href="/"
-            className="hidden rounded-xl px-3 py-2 text-sm font-bold text-foreground transition-colors hover:bg-muted sm:inline-block"
+            className="rounded-xl px-3 py-2 text-sm font-bold text-foreground transition-colors hover:bg-muted"
           >
             {dict.common.nav.home}
           </Link>
@@ -35,19 +36,19 @@ export async function Navbar() {
           </Link>
           <Link
             href="/about"
-            className="hidden rounded-xl px-3 py-2 text-sm font-bold text-foreground transition-colors hover:bg-muted sm:inline-block"
+            className="rounded-xl px-3 py-2 text-sm font-bold text-foreground transition-colors hover:bg-muted"
           >
             {dict.common.nav.about}
           </Link>
           <Link
             href="/faq"
-            className="hidden rounded-xl px-3 py-2 text-sm font-bold text-foreground transition-colors hover:bg-muted sm:inline-block"
+            className="rounded-xl px-3 py-2 text-sm font-bold text-foreground transition-colors hover:bg-muted"
           >
             {dict.common.nav.faq}
           </Link>
           <Link
             href="/contact"
-            className="hidden rounded-xl px-3 py-2 text-sm font-bold text-foreground transition-colors hover:bg-muted sm:inline-block"
+            className="rounded-xl px-3 py-2 text-sm font-bold text-foreground transition-colors hover:bg-muted"
           >
             {dict.common.nav.contact}
           </Link>
@@ -74,6 +75,15 @@ export async function Navbar() {
 
           <LanguageSwitcher locale={locale} />
         </nav>
+
+        <MobileNav
+          profile={
+            profile ? { full_name: profile.full_name, role: profile.role } : null
+          }
+          nav={dict.common.nav}
+          profileMenu={dict.profileMenu}
+          locale={locale}
+        />
       </div>
     </header>
   )

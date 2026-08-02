@@ -31,6 +31,9 @@ const ar: Dictionary = {
   footer: {
     tagline:
       "شقق ومنازل وغرف معروضة مباشرة من قبل الملاك — بدون وسيط وبدون رسوم منصة.",
+    explore: {
+      title: "ابدأ الآن",
+    },
     renters: {
       title: "المستأجرون",
       browse: "تصفح الإعلانات",
@@ -255,6 +258,8 @@ const ar: Dictionary = {
       statusNotice: "هذا الإعلان",
       statusNoticeSuffix: "— أنت والمشرفون فقط من يمكنهم رؤيته.",
       noPhotos: "لا توجد صور بعد",
+      previousImage: "الصورة السابقة",
+      nextImage: "الصورة التالية",
     },
     card: {
       perMonth: "/شهريًا",

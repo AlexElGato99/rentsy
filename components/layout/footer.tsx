@@ -1,26 +1,35 @@
 import Link from "next/link"
 
+import { getCurrentProfile } from "@/lib/auth/dal"
 import { Logo } from "@/components/layout/logo"
 import { getLocale } from "@/lib/i18n/get-locale"
 import { getDictionary } from "@/lib/i18n/get-dictionary"
 
 export async function Footer() {
-  const locale = await getLocale()
+  const [profile, locale] = await Promise.all([getCurrentProfile(), getLocale()])
   const dict = getDictionary(locale)
+
+  const ownersLinks =
+    profile?.role === "seller"
+      ? [
+          { label: dict.profileMenu.addNewListing, href: "/seller/listings/new" },
+          { label: dict.footer.owners.dashboard, href: "/seller/dashboard" },
+        ]
+      : profile?.role === "admin"
+        ? [{ label: dict.profileMenu.adminDashboard, href: "/admin/dashboard" }]
+        : profile?.role === "customer"
+          ? []
+          : [{ label: dict.footer.owners.list, href: "/signup" }]
 
   const columns = [
     {
-      title: dict.footer.renters.title,
+      title: dict.footer.explore.title,
       links: [
         { label: dict.footer.renters.browse, href: "/listings" },
-        { label: dict.footer.renters.createAccount, href: "/signup" },
-      ],
-    },
-    {
-      title: dict.footer.owners.title,
-      links: [
-        { label: dict.footer.owners.list, href: "/signup" },
-        { label: dict.footer.owners.dashboard, href: "/seller/dashboard" },
+        ...(profile
+          ? []
+          : [{ label: dict.footer.renters.createAccount, href: "/signup" }]),
+        ...ownersLinks,
       ],
     },
     {
@@ -38,12 +47,12 @@ export async function Footer() {
         { label: dict.footer.legal.privacy, href: "/privacy" },
       ],
     },
-  ]
+  ].filter((column) => column.links.length > 0)
 
   return (
     <footer className="border-t-2 border-foreground bg-secondary/40">
       <div className="mx-auto w-full max-w-6xl px-4 py-12 sm:px-6">
-        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-[1.5fr_1fr_1fr_1fr_1fr]">
+        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-[1.5fr_1fr_1fr_1fr]">
           <div>
             <Logo />
             <p className="mt-3 max-w-xs text-sm font-medium text-muted-foreground">

@@ -29,6 +29,9 @@ const en = {
   footer: {
     tagline:
       "Apartments, houses, and rooms listed directly by owners — no middleman, no platform fees.",
+    explore: {
+      title: "Get started",
+    },
     renters: {
       title: "Renters",
       browse: "Browse listings",
@@ -253,6 +256,8 @@ const en = {
       statusNotice: "This listing is",
       statusNoticeSuffix: "— only you and admins can see it.",
       noPhotos: "No photos yet",
+      previousImage: "Previous photo",
+      nextImage: "Next photo",
     },
     card: {
       perMonth: "/mo",
